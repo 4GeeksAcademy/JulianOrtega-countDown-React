@@ -1,37 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const SecondsCounter = ({ start = 0, alertTime }) => {
-  const [seconds, setSeconds] = useState(start);
-  const [isRunning, setIsRunning] = useState(true);
+class SecondsCounter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      seconds: props.start || 0,
+      isRunning: true,
+    };
+    this.interval = null;
+  }
 
-  useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning]);
+  componentDidMount() {
+    this.startCounter();
+  }
 
-  useEffect(() => {
-    if (alertTime && seconds === alertTime) {
-      alert(`Tiempo alcanzado: ${alertTime} segundos`);
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.alertTime && this.state.seconds === this.props.alertTime) {
+      alert(`Tiempo alcanzado: ${this.props.alertTime} segundos`);
     }
-  }, [seconds, alertTime]);
+  }
 
-  return (
-    <div className="container text-center mt-5">
-      <div className="display-1 bg-dark text-light p-3 rounded">{seconds}</div>
-      <div className="mt-3">
-        <button className="btn btn-primary me-2" onClick={() => setIsRunning(!isRunning)}>
-          {isRunning ? "Pausar" : "Reanudar"}
-        </button>
-        <button className="btn btn-danger" onClick={() => setSeconds(0)}>
-          Reiniciar
-        </button>
+  startCounter = () => {
+    this.interval = setInterval(() => {
+      if (this.state.isRunning) {
+        this.setState((prevState) => ({ seconds: prevState.seconds + 1 }));
+      }
+    }, 1000);
+  };
+
+  toggleCounter = () => {
+    this.setState((prevState) => ({ isRunning: !prevState.isRunning }));
+  };
+
+  resetCounter = () => {
+    this.setState({ seconds: 0 });
+  };
+
+  render() {
+    return (
+      <div className="container text-center mt-5">
+        <div className="display-1 bg-dark text-light p-3 rounded">
+          {this.state.seconds}
+        </div>
+        <div className="mt-3">
+          <button className="btn btn-primary me-2" onClick={this.toggleCounter}>
+            {this.state.isRunning ? "Pausar" : "Reanudar"}
+          </button>
+          <button className="btn btn-danger" onClick={this.resetCounter}>
+            Reiniciar
+          </button>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default SecondsCounter;
