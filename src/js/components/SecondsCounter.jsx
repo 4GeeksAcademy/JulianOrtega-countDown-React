@@ -1,35 +1,6 @@
-import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
 
-const SecondsCounter = ({ start = 0, alertTime }) => {
-  const [seconds, setSeconds] = useState(start);
-  const [isRunning, setIsRunning] = useState(true);
-
-  useEffect(() => {
-    let interval;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setSeconds(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    if (alertTime && seconds === alertTime) {
-      alert(`Tiempo alcanzado: ${alertTime} segundos`);
-    }
-  }, [seconds, alertTime]);
-
-  const toggleCounter = () => {
-    setIsRunning(prev => !prev);
-  };
-
-  const resetCounter = () => {
-    setSeconds(0);
-    setIsRunning(true);
-  };
-
+const SecondsCounter = ({ seconds, toggleCounter, resetCounter, isRunning }) => {
   return (
     <div className="container text-center mt-5">
       <div className="display-1 bg-dark text-light p-3 rounded">
